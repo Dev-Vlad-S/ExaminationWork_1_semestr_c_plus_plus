@@ -1,0 +1,184 @@
+@startuml
+
+Button <--* AuthorizationPanel
+InputField <--* AuthorizationPanel
+
+
+InputLabel <|-- InputField
+Label <|-- InputField
+Object <|-- InputLabel
+Object <|-- Label
+Object <|-- Button
+
+Frame <--* AuthorizationPanel
+Sections <--* AuthorizationPanel
+Demonstration <--* AuthorizationPanel
+AuthorizationPanel <--* WorkSpace
+WorkSpace <--* Gui
+MainWindow <--* Gui
+Gui <--* Application
+
+class Application
+{
++ Application()
++ Run() : void
+
+- database : database
+- gui : Gui
+}
+
+class Gui
+{
++ Gui()
++ getMainWindow() : MainWindow&
++ getWorkspace() : Workspace&
++ Draw() : void
+
+- mainWindow : MainWindow
+- workspace : Workspace
+}
+
+class WorkSpace
+{
++ WorkSpace()
++ getAuthorizationPanel() : AuthorizationPanel&
++ Draw() : void
+
+- authorizationPanel : AuthorizationPanel
+- personalAccountPanel : PersonalAccountPanel
+}
+
+class AuthorizationPanel
+{
++ AuthorizationPanel()
++ getStatusDemonstration : bool
++ Draw() : void
++ SelectSection(key : KEY_EVENT_RECORD) : void
+
+- setOrigin() : void
+- ChangeSection(activeSection : int) : void
+
+- demonstration : Demonstration
+- origin : COORD
+- frame : Frame
+- objects : vector<Objects*>
+- Sections : enum
+- section : Sections
+- textSection : string
+}
+
+class Frame
+{
++ Frame()
++ Draw(origin : const COORD&)
++ getWidth() : int
++ getHeight() : int
+
+- symbolFrame : char
+- width : int
+- height : int
+}
+
+enum Sections
+{
+LOGIN
+PASSWORD
+GROUP
+SINGIN 
+}
+
+abstract class Object
+{
++ getText() : string
++ Draw(origin : const COORD&, COORD offset, textSection : string) : void
+
+# Object()
+# Object(text : string)
+# Draw(origin: const COORD, textSection : string) : void
+
+# text : string
+# origin : COORD
+}
+
+class Label
+{
+# Label()
+# Label(text: string, maxLength : int, indicator :  string)
+# Draw(origin : const COORD&, COORD offset, textSection : string) : void
+# Draw(origin: const COORD, textSection : string) : void
+
+# line : string
+
+- InitializeLine() : void
+
+- maxLenghth : int
+- indicator : string
+}
+
+class InputLabel
+{
++ InputLabel(ch : WCHAR) : void
++ getInputedLine() : string
++ getOrigin() : COORD
++ clear(): void
+
+# InputLabel()
+# Draw (origin : COORD) : void
+# Draw(origin : const COORD&, COORD offset, textSection : string) : void
+
+- SetOrigin(origin : COORD) : void
+- OffsetOrigin(offsetX : short, offsetY : short) : void
+
+- maxLength : int
+- inputedLine : string
+- origin : COORD
+}
+
+
+class InputField
+{
++ InputField()
++ InputField(tetx : string, margin : string)
++ Draw(origin : const COORD&, COORD offset, textSection : string) : void
+}
+
+class Button
+{
++ Button()
++ Button(tetx : string)
++ Draw(origin : const COORD&, COORD offset, textSection : string) : void
++ Draw(origin: const COORD, textSection : string) : void
+}
+
+class MainWindow
+{
++ MainWindow()
++ ResizeBufferWindow(wbsr : WINDOW_BUFFER_SIZE_RECORD) : void
+}
+
+class StatusBar
+{
++{static} Draw (text : string) : void
+-{static} Clear() : void
+
+-{static} origin : COORD
+-{static} indicator : string
+-{static} cursorPosition : COORD
+}
+
+enum Demonstration
+{
+On
+Off 
+}
+
+class ServiceVariables
+{
++{static} consoleWindow : HWND
++{static} hInputBuffer : HANDLE
++{static} hOutputBuffer : HANDLE
++{static} cScrBufferInfo : CONSOLE_SCREEN_BUFFER_INFO
+}
+
+
+@enduml
