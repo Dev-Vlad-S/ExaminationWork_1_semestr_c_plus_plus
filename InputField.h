@@ -4,31 +4,39 @@
 #include "Label.h"
 #include "InputLabel.h"
 
-class InputField : public Label, public InputLabel
+class InputField : public IPainter
 {
 public:
+
+	void Draw() override;
+	Label* getLabel();
+	InputLabel* getInputLabel();
+	InputField(string text, int maxLengthLabel, string indicator, int maxLengthInputLabel);
 	InputField();
-	InputField(string text, int maxLength = 10, string indicator = ":");
-	void Draw(const COORD& origin, COORD offset, string textSection) override;
+private:
+	Label* label;
+	InputLabel* inputLabel;
 };
 
-InputField::InputField()
-{
+InputField::InputField() {}
 
+InputField::InputField(string text, int maxLengthLabel = 10, string indicator = ":", int maxLengthInputLabel = 20)
+{
+	label = new Label(text, { 0,0 }, maxLengthLabel, indicator);
+	inputLabel = new InputLabel(maxLengthInputLabel);
 }
 
-InputField::InputField(string text, int maxLength, string indicator) : Object(text), Label(text, maxLength, indicator), InputLabel()
+void InputField::Draw()
 {
-
+	label->Draw();
+	COORD originInputLabel = { label->getOrigin().X + label->getLine().size() + 2, label->getOrigin().Y };
+	inputLabel->setOrigin(originInputLabel);
+	inputLabel->Draw();
 }
 
-void InputField::Draw(const COORD& origin, COORD offset, string textSection)
-{
-	short pointX = origin.X + offset.X;
-	short pointY = origin.Y + offset.Y;
-	Label::Draw({pointX, pointY}, textSection);
-	InputLabel::Draw({ short(pointX + size(line) + 2),  pointY });
-}
+Label* InputField::getLabel() { return label; }
+
+InputLabel* InputField::getInputLabel() { return inputLabel; }
 
 
 

@@ -46,20 +46,17 @@ void Application::Run()
 					if (gui.getWorkSpace().getAuthorizationPanel().getStatusDemostration() == bool(Demonstration::On))
 					{
 						gui.getWorkSpace().getAuthorizationPanel().SelectSection(lpBufferInputData[i].Event.KeyEvent, db.getDataBaseClassRoomTeachers());
-					}
-					/*if (gui.getWorkspace().getLoginPanel().getVisible())
-					{
-						gui.getWorkspace().getLoginPanel().SelectContent(lpBufferInputData[i].Event.KeyEvent, dataBase.getDataBaseClassRoomTeachers());
-						if (gui.getWorkspace().getLoginPanel().getVisible())
+						if (gui.getWorkSpace().getAuthorizationPanel().getStatusDemostration() == bool(Demonstration::Off))
 						{
-							gui.getWorkspace().getLoginPanel().Draw();
-
+							gui.getWorkSpace().getPersonalAccount().setStatusDemostration(bool(Demonstration::On));
+							gui.getWorkSpace().getPersonalAccount().Draw();
+							break;
 						}
 					}
-					if (gui.getWorkspace().getPersonalAccountWindow().getVisible())
+					if (gui.getWorkSpace().getPersonalAccount().getStatusDemostration() == bool(Demonstration::On))
 					{
-						gui.getWorkspace().getPersonalAccountWindow().InputCommands(lpBufferInputData[i].Event.KeyEvent, dataBase.getDataBaseStudents());
-					}*/
+						gui.getWorkSpace().getPersonalAccount().InputCommands(lpBufferInputData[i].Event.KeyEvent, db.getDataBaseStudents());
+					}
 				}
 			}
 

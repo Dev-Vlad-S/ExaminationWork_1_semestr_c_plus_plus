@@ -5,8 +5,8 @@
 class DataBaseClassRoomTeachers
 {
 public:
-	DataBaseClassRoomTeachers();
 	bool ReadInputAuthorizationData(map < string, map<string, string>> inputedTeachersAutorizationData);
+	DataBaseClassRoomTeachers();
 	
 private:
 	map < string, map<string, string>> teachersAutorizationData;
@@ -14,9 +14,10 @@ private:
 
 DataBaseClassRoomTeachers::DataBaseClassRoomTeachers()
 {
-	teachersAutorizationData["10a"].insert({ "annaivanovna", "cool10a" });
-	teachersAutorizationData["9b"].insert({ "lizapetrovna", "cool9b" });
-	teachersAutorizationData["8d"].insert({ "irinaviktorovna", "cool8d" });
+	teachersAutorizationData["10A"].insert({ "AnnaIvanovna", "cool10A" });
+	teachersAutorizationData["9B"].insert({ "LizaPetrovna", "cool9B" });
+	teachersAutorizationData["8D"].insert({ "IrinaViktorovna", "cool8D" });
+	teachersAutorizationData["1"].insert({ "1", "1" });
 }
 
 bool DataBaseClassRoomTeachers::ReadInputAuthorizationData(map<string, map<string, string>> inputedTeachersAutorizationData)

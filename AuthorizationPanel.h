@@ -7,21 +7,20 @@
 #include "Button.h"
 #include "DataBaseClassRoomTeachers.h"
 #include "StatusBar.h"
-
+#include "IPainter.h"
 
 class AuthorizationPanel
 {
 public:
-	AuthorizationPanel();
-	bool getStatusDemostration();
 	void Draw();
 	void SelectSection(KEY_EVENT_RECORD key, DataBaseClassRoomTeachers& dbClassRoomTeachers);
+	bool getStatusDemostration();
+	AuthorizationPanel();
 private:
+	void DrawSections();
 	void setOrigin();
-	void setSection(int activeSection);
-	void setTextSection(string text);
 	void InputAuthorizationData(WCHAR ch);
-	void ChangeViewPanel(int activeSection, PressedKey key);
+	void SetSection(int activeSection, PressedKey key);
 	void ChecInputedAutorizationData(DataBaseClassRoomTeachers& dbClassRoomTeachers);
 	void ClearInputedAutorizationData();
 	void DispalayTip();
@@ -31,17 +30,15 @@ private:
 	Demonstration demonstration;
 	COORD origin;
 	Frame frame;
-	vector<Object*> objects;
+	vector<IPainter*> objects;
 	enum Sections { LOGIN, PASSWORD, GROUP, SINGIN };
 	Sections section = LOGIN;
-	string textSection;
 };
 
 AuthorizationPanel::AuthorizationPanel() : frame{}
 {
 	demonstration = Demonstration::On;
-	objects = { new InputField("LOGIN"), new InputField("PASSWORD"),  new InputField("GROUP"), new Button("SINGIN") };
-	textSection = objects[section]->getText();
+	objects = { new InputField("LOGIN"), new InputField("PASSWORD"), new InputField("GROUP"), new Button("SINGIN") };
 	Draw();
 }
 
@@ -50,14 +47,13 @@ void AuthorizationPanel::SelectSection(KEY_EVENT_RECORD key, DataBaseClassRoomTe
 	int activeSection = section;
 	if (!key.bKeyDown)
 	{
-
 		switch (key.wVirtualKeyCode)
 		{
 		case UP:
-			ChangeViewPanel(activeSection, UP);
+			SetSection(activeSection, UP);
 			break;
 		case DOWN:
-			ChangeViewPanel(activeSection, DOWN);
+			SetSection(activeSection, DOWN);
 			break;
 		case ENTER:
 			ChecInputedAutorizationData(dbClassRoomTeachers);
@@ -87,39 +83,94 @@ void AuthorizationPanel::Draw()
 	{
 		setOrigin();
 		frame.Draw(origin);
-		objects[LOGIN]->Draw(origin, { 3, 3 }, textSection);
-		objects[PASSWORD]->Draw(origin, { 3, 6 }, textSection);
-		objects[GROUP]->Draw(origin, { 3, 9 }, textSection);
-		objects[SINGIN]->Draw(origin, { 16, 13 }, textSection);
+		DrawSections();
 		DispalayTip();
-
-		if (section == LOGIN || section == PASSWORD || section == GROUP)
-		{
-			SetConsoleCursorPosition(ServiceVariables::hOutputBuffer, { (dynamic_cast<InputLabel*>(objects[section]))->getOrigin() });
-		}
 	}
 }
 
-void AuthorizationPanel::setSection(int activeSection) { section = Sections(activeSection); }
+void AuthorizationPanel::DrawSections()
+{
+	if (section == LOGIN)
+	{
+		COORD offsetLogin = { origin.X + 3, origin.Y + 3 };
+		dynamic_cast<InputField*>(objects[LOGIN])->getLabel()->setOrigin(offsetLogin);
+		dynamic_cast<InputField*>(objects[LOGIN])->getLabel()->SetColor(Highlighted);
+		dynamic_cast<InputField*>(objects[LOGIN])->Draw();
+	}
+	else
+	{
+		COORD offsetLogin = { origin.X + 3, origin.Y + 3 };
+		dynamic_cast<InputField*>(objects[LOGIN])->getLabel()->setOrigin(offsetLogin);
+		dynamic_cast<InputField*>(objects[LOGIN])->getLabel()->SetColor(Normal);
+		dynamic_cast<InputField*>(objects[LOGIN])->Draw();
+	}
 
-void AuthorizationPanel::setTextSection(string text) { textSection = text; }
+	if (section == PASSWORD)
+	{
+		COORD offsetPassword = { origin.X + 3, origin.Y + 6 };
+		dynamic_cast<InputField*>(objects[PASSWORD])->getLabel()->setOrigin(offsetPassword);
+		dynamic_cast<InputField*>(objects[PASSWORD])->getLabel()->SetColor(Highlighted);
+		dynamic_cast<InputField*>(objects[PASSWORD])->Draw();
+	}
+	else
+	{
+		COORD offsetPassword = { origin.X + 3, origin.Y + 6 };
+		dynamic_cast<InputField*>(objects[PASSWORD])->getLabel()->setOrigin(offsetPassword);
+		dynamic_cast<InputField*>(objects[PASSWORD])->getLabel()->SetColor(Normal);
+		dynamic_cast<InputField*>(objects[PASSWORD])->Draw();
+	}
 
-void AuthorizationPanel::ChangeViewPanel(int activeSection, PressedKey key)
+	if (section == GROUP)
+	{
+		COORD offsetGroup = { origin.X + 3, origin.Y + 9 };
+		dynamic_cast<InputField*>(objects[GROUP])->getLabel()->setOrigin(offsetGroup);
+		dynamic_cast<InputField*>(objects[GROUP])->getLabel()->SetColor(Highlighted);
+		dynamic_cast<InputField*>(objects[GROUP])->Draw();
+
+	}
+	else
+	{
+		COORD offsetGroup = { origin.X + 3, origin.Y + 9 };
+		dynamic_cast<InputField*>(objects[GROUP])->getLabel()->setOrigin(offsetGroup);
+		dynamic_cast<InputField*>(objects[GROUP])->getLabel()->SetColor(Normal);
+		dynamic_cast<InputField*>(objects[GROUP])->Draw();
+	}
+
+	if (section == SINGIN)
+	{
+		COORD offsetSingIn = { origin.X + 18, origin.Y + 13 };
+		dynamic_cast<Button*>(objects[SINGIN])->setOrigin(offsetSingIn);
+		dynamic_cast<Button*>(objects[SINGIN])->SetColor(Highlighted);
+		dynamic_cast<Button*>(objects[SINGIN])->Draw();
+	}
+	else
+	{
+		COORD offsetSingIn = { origin.X + 18, origin.Y + 13 };
+		dynamic_cast<Button*>(objects[SINGIN])->setOrigin(offsetSingIn);
+		dynamic_cast<Button*>(objects[SINGIN])->SetColor(Normal);
+		dynamic_cast<Button*>(objects[SINGIN])->Draw();
+	}
+
+	if (section == LOGIN || section == PASSWORD || section == GROUP)
+	{
+		(dynamic_cast<InputField*>(objects[section]))->Draw();
+	}
+}
+
+void AuthorizationPanel::SetSection(int activeSection, PressedKey key)
 {
 	if (key == UP)
 	{
 		if (section < objects.size() && section > 0)
 		{
-			setSection(--activeSection);
-			setTextSection(objects[section]->getText());
+			section = Sections(--activeSection);
 		}
 	}
 	if (key == DOWN)
 	{
 		if (activeSection > -1 && activeSection < objects.size() - 1)
 		{
-			setSection(++activeSection);
-			setTextSection(objects[section]->getText());
+			section = Sections(++activeSection);;
 		}
 	}
 	Draw();
@@ -129,7 +180,7 @@ void AuthorizationPanel::InputAuthorizationData(WCHAR ch)
 {
 	if (section == LOGIN || section == PASSWORD || section == GROUP)
 	{
-		(dynamic_cast<InputLabel*>(objects[section]))->InputLineText(ch);
+		(dynamic_cast<InputField*>(objects[section]))->getInputLabel()->InputLineText(ch);
 	}
 }
 
@@ -137,9 +188,9 @@ void AuthorizationPanel::ChecInputedAutorizationData(DataBaseClassRoomTeachers& 
 {
 	if (section == SINGIN)
 	{
-		string login = dynamic_cast<InputLabel*>(objects[LOGIN])->getInputedLine();
-		string password = dynamic_cast<InputLabel*>(objects[PASSWORD])->getInputedLine();
-		string group = dynamic_cast<InputLabel*>(objects[GROUP])->getInputedLine();
+		string login = dynamic_cast<InputField*>(objects[LOGIN])->getInputLabel()->getInputedLine();
+		string password = dynamic_cast<InputField*>(objects[PASSWORD])->getInputLabel()->getInputedLine();
+		string group = dynamic_cast<InputField*>(objects[GROUP])->getInputLabel()->getInputedLine();
 
 		if (login == "" || password == "" || group == "")
 		{
@@ -165,7 +216,7 @@ void AuthorizationPanel::ClearInputedAutorizationData()
 {
 	if (section == LOGIN || section == PASSWORD || section == GROUP)
 	{
-		dynamic_cast<InputLabel*>(objects[section])->Clear();
+		dynamic_cast<InputField*>(objects[section])->getInputLabel()->ClearSymbol();
 	}
 }
 
@@ -174,16 +225,16 @@ void AuthorizationPanel::DispalayTip()
 	switch (section)
 	{
 	case LOGIN:
-		StatusBar::Draw("Section selected " + objects[LOGIN]->getText() + ". By pressing ENTER, you can input " + objects[LOGIN]->getText());
+		//StatusBar::Draw("Section selected " + objects[LOGIN]->getText() + ". By pressing ENTER, you can input " + objects[LOGIN]->getText());
 		break;
 	case PASSWORD:
-		StatusBar::Draw("Section selected " + objects[PASSWORD]->getText() + ". By pressing ENTER, you can input " + objects[PASSWORD]->getText());
+		//StatusBar::Draw("Section selected " + objects[PASSWORD]->getText() + ". By pressing ENTER, you can input " + objects[PASSWORD]->getText());
 		break;
 	case GROUP:
-		StatusBar::Draw("Section selected " + objects[GROUP]->getText() + ". By pressing ENTER, you can input " + objects[GROUP]->getText());
+		//StatusBar::Draw("Section selected " + objects[GROUP]->getText() + ". By pressing ENTER, you can input " + objects[GROUP]->getText());
 		break;
 	case SINGIN:
-		StatusBar::Draw("Section selected " + objects[SINGIN]->getText() + ". By pressing ENTER, you can enter your personal account");
+		//StatusBar::Draw("Section selected " + objects[SINGIN]->getText() + ". By pressing ENTER, you can enter your personal account");
 		break;
 	}
 }

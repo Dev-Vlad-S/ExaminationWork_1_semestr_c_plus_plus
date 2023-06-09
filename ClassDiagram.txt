@@ -1,14 +1,29 @@
 @startuml
 
-Button <--* AuthorizationPanel
-InputField <--* AuthorizationPanel
+DataBaseStudents <--* PersonalAccount
+DataBaseClassRoomTeachers <--* AuthorizationPanel
 
+Student <--* DataBaseStudents
+DataBaseStudents <--* DataBase
+DataBaseClassRoomTeachers <--* DataBase
+DataBase <--* Application
 
-InputLabel <|-- InputField
-Label <|-- InputField
+IPainter <--* AuthorizationPanel
+IPainter <|.. InputField
+
+Object <|-- Button
 Object <|-- InputLabel
 Object <|-- Label
-Object <|-- Button
+IPainter <|.. Object
+
+CommandsHistoryPanel <--* CommandPanel
+InputField <--* CommandPanel
+
+Demonstration <--* PersonalAccount
+OutPutPanel <--* PersonalAccount
+CommandPanel <--* PersonalAccount
+SplitLine <--* PersonalAccount
+PersonalAccount <--* WorkSpace
 
 Frame <--* AuthorizationPanel
 Sections <--* AuthorizationPanel
@@ -40,28 +55,165 @@ class Gui
 
 class WorkSpace
 {
-+ WorkSpace()
-+ getAuthorizationPanel() : AuthorizationPanel&
 + Draw() : void
++ getAuthorizationPanel() : AuthorizationPanel&
++ getPersonalAccount() : PersonalAccount&
++ WorkSpace()
 
 - authorizationPanel : AuthorizationPanel
-- personalAccountPanel : PersonalAccountPanel
+- personalAccount : PersonalAccount
+}
+
+class Student
+{
++ AddMarks(line : string)
++ setMiddleName(middleName : string) : void
++ setLastName(lastName : string) : void
++ setFirstName(firstName : string) : void
++ getFirstName() : string
++ getLastName() : string
++ getMiddleName() : string
++ getSubjects() : vector<string>&
++ getMarks() : map<string, vector<string>>&
++ ~Student()
++ Student(line : string)
++ Student()
+
++ {static} id : int
+
+- firstName : string
+- lastName : string
+- middleName : string
+- subjects : vector<string> 
+- marks : map<string, vector<string>>
+}
+
+
+class DataBaseStudents
+{
++ ImportDataBaseStudents(path : string) : bool 
++ getStudents() : map<int, Student>&
++ DataBaseStudents()
+
+- students : map<int, Student>
+}
+
+class DataBaseClassRoomTeachers
+{
++ ReadInputAuthorizationData(inputedTeachersAutorizationData : map < string, map<string, string>>) : bool
++ DataBaseClassRoomTeachers()
+
+- teachersAutorizationData : map < string, map<string, string>>
+}
+
+class DataBase
+{
++ getDataBaseStudents : DataBaseStudents&
++ getDataBaseClassRoomTeachers : DataBaseClassRoomTeachers&
++ DataBase()
+
+- dbStudents : DataBaseStudents
+- dbClassRoomTeachers : DataBaseClassRoomTeachers
+}
+
+
+class PersonalAccount
+{
+- ClearInputedSymbol() : void
+- ClearInputedCommand() : void
+- ImplementCommans(dbStudents : DataBaseStudents&) : void
+- UpdateHistory() : void
+- ReadFile(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- PrintStudents(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- AddStudent(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- DeleteByID(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- CallHelp(commandLine : vector<string>&) : bool
+- ListUpHistory() : void
+- ListDownHistory() : void
+
+- splitLine : SplitLine
+- demonstration : Demonstration
+- commandPanel : commandPanel
+- outPutPanel : OutPutPanel
+}
+
+class SplitLine
+{
++ Draw() : void
++ SplitLine(origin : COORD);
++ SplitLine()
+
+- origin : COORD
+}
+
+class CommandsHistoryPanel
+{
++ Draw() : void
++ resetPosition() : void
++ setPosition(pos : int)
++ getHistory : vector<string>
++ getPosition() : int
++ getHeight() : short
++ getOrigin() : COORD
++ CommandsHistoryPanel()
+
+- Clear() : void
+
+- position : int
+- history : vector<string>
+- indicator : string
+- height : unsigned int
+- origin : COORD
+}
+
+class CommandPanel
+{
++ Draw() : void
++ ParsingCommandLine() : vector<string>
++ getInputField : InputField&
++ getCommandsHistoryPanel : CommandsHistoryPanel&
++ CommandPanel()
+
+- inputedCommand : vector<string>
+- height : short
+- origin : COORD
+- commandsHistoryPanel : CommandsHistoryPanel
+- inputField : InputField
+}
+
+class OutPutPanel
+{
++ DisplayHelp() : void
++ Display(dbStudents : DataBaseStudents&)
++ OutPutPanel(origin : COORD)
++ OutPutPanel()
+
+- Clear() : void
+
+- origin : COORD
 }
 
 class AuthorizationPanel
 {
-+ AuthorizationPanel()
-+ getStatusDemonstration : bool
 + Draw() : void
 + SelectSection(key : KEY_EVENT_RECORD) : void
++ getStatusDemonstration() : bool
++ AuthorizationPanel()
 
+- DrawSections() : void
 - setOrigin() : void
-- ChangeSection(activeSection : int) : void
+- InputAutorizationData(ch : WCHAR) : void
+- setSection(activeSection : int, key : PressedKey) : void
+- ChecInputedAutorizationData(dbClassRoomTeachers : DataBaseClassRoomTeachers&) : void
+- ClearInputedAutorizationData() : void
+- DispayTip() : void
+- Clear() : void
+
 
 - demonstration : Demonstration
 - origin : COORD
 - frame : Frame
-- objects : vector<Objects*>
+- objects : vector<IPainter*>
 - Sections : enum
 - section : Sections
 - textSection : string
@@ -87,14 +239,23 @@ GROUP
 SINGIN 
 }
 
+interface IPainter
+{
++ {abstract} Draw() : void
+}
+
 abstract class Object
 {
++ setOrigin(origin : COORD) : void
++ getOrigin() : COORD
++ setText(text : string) : void
 + getText() : string
-+ Draw(origin : const COORD&, COORD offset, textSection : string) : void
 
+
+# Object(text : string, origin COORD)
 # Object()
-# Object(text : string)
-# Draw(origin: const COORD, textSection : string) : void
+
+- {abstract} Draw() : void
 
 # text : string
 # origin : COORD
@@ -102,52 +263,63 @@ abstract class Object
 
 class Label
 {
-# Label()
-# Label(text: string, maxLength : int, indicator :  string)
-# Draw(origin : const COORD&, COORD offset, textSection : string) : void
-# Draw(origin: const COORD, textSection : string) : void
++ Draw() : void
++ SetColor(Colors color) : void
++ getline() : string
++ Label(text: string, origin : COORD, maxLength : int, indicator :  string)
++ Label()
+
 
 # line : string
 
-- InitializeLine() : void
+- Fill() : void
 
+- color : Colors
 - maxLenghth : int
 - indicator : string
 }
 
 class InputLabel
 {
-+ InputLabel(ch : WCHAR) : void
++ Draw() : void
++ InputLineText(ch : WCHAR) : void
++ getOrigin() : COORD
++ clearSymbol(): void
++ clearAll(): void
++ setInputedLine(line : string) : void
 + getInputedLine() : string
 + getOrigin() : COORD
-+ clear(): void
-
-# InputLabel()
-# Draw (origin : COORD) : void
-# Draw(origin : const COORD&, COORD offset, textSection : string) : void
++ InputLabel(maxLength : int)
++ InputLabel()
 
 - SetOrigin(origin : COORD) : void
 - OffsetOrigin(offsetX : short, offsetY : short) : void
 
 - maxLength : int
 - inputedLine : string
-- origin : COORD
 }
 
 
 class InputField
 {
-+ InputField()
-+ InputField(tetx : string, margin : string)
-+ Draw(origin : const COORD&, COORD offset, textSection : string) : void
++ Draw() : void
++ getLabel() : Label*
++ getInputLabel : InputLabel*
++ InputField(text : string, maxLengthLabel : int, indicator : string, maxLengthInputLabel : int)
++ InputField();
+
+- label : Label*
+- inputLabel : InputLabel*
 }
 
 class Button
 {
++ Draw() : void
++ setColor (color : Colors) : void
++ Button(tetx : string, origin : COORD)
 + Button()
-+ Button(tetx : string)
-+ Draw(origin : const COORD&, COORD offset, textSection : string) : void
-+ Draw(origin: const COORD, textSection : string) : void
+
+- color : Colors
 }
 
 class MainWindow

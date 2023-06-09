@@ -1,31 +1,43 @@
 #pragma once
 #include "ConnectedLibraries.h"
 #include "ServiceVariables.h"
+#include "IPainter.h"
 
-class Object
+class Object : public IPainter
 {
 public:
+	void setOrigin(COORD origin);
+	COORD getOrigin();
+	void setText(string text);
 	string getText();
-	virtual void Draw(const COORD& origin, COORD offset, string textSection) = 0;
 protected:
+	Object(string text, COORD origin);
 	Object();
-	Object(string text);
-	virtual void Draw(const COORD origin, string textSection) = 0;
 protected:
 	string text;
 	COORD origin;
+private:
+	void Draw() override = 0;
 };
 
 string Object::getText() { return text; }
 
+void Object::setText(string text) { this->text = text; }
+
+void Object::setOrigin(COORD origin)
+{
+	this->origin = origin;
+}
+
+COORD Object::getOrigin() {	return origin; }
 
 Object::Object()
 {
-	this->text = "666655";
+	this->text = "";
 	origin = { 0,0 };
 }
 
-Object::Object(string text)
+Object::Object(string text, COORD origin = { 0,0 })
 {
 	this->text = text;
 }

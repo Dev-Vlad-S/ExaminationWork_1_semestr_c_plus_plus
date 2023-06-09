@@ -32,6 +32,7 @@ int Frame::getHeight() { return height; }
 void Frame::Draw(const COORD& origin)
 {
 	SetConsoleCursorPosition(ServiceVariables::hOutputBuffer, { origin.X, origin.Y });
+	SetConsoleTextAttribute(ServiceVariables::hOutputBuffer, Normal);
 
 	for (int i = 0; i < width; i++)
 	{

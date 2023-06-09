@@ -2,39 +2,59 @@
 #include "ConnectedLibraries.h"
 #include "ServiceVariables.h"
 #include "Object.h"
+#include "IPainter.h"
 
-class Label : virtual public Object
+class Label : public Object
 {
-protected:
+public:
+	void Draw();
+	void SetColor(Colors color);
+	string getLine();
+	Label(string text, COORD origin, int maxLength, string indicator);
 	Label();
-	Label(string text, int maxLength, string indicator);
-	void Draw(const COORD origin, string textSection) override;
-	void Draw(const COORD& origin, COORD offset, string textSection) override;
 protected:
 	string line;
 private:
-	void InitializeLine();
+	void Fill();
 private:
+	Colors color;
 	int maxLength;
 	string indicator;
 };
 
 Label::Label()
 {
-	maxLength = 0;
+	color = Colors::Normal;
+	maxLength = 20;
 	string indicator = ":";
 	line = "";
 }
 
 
-Label::Label(string text, int maxLength, string indicator) : Object(text)
+Label::Label(string text, COORD origin, int maxLength, string indicator) : Object(text, origin)
 {
+	color = Colors::Normal;
 	this->maxLength = maxLength;
 	this->indicator = indicator;
-	InitializeLine();
+	Fill();
 }
 
-void Label::InitializeLine()
+string Label::getLine() { return line; }
+
+void Label::SetColor(Colors color)
+{
+	this->color = color;
+}
+
+ void Label::Draw()
+{
+	 SetConsoleCursorPosition(ServiceVariables::hOutputBuffer, { origin.X, origin.Y });
+	 SetConsoleTextAttribute(ServiceVariables::hOutputBuffer, color);
+	 cout << line;
+	 SetConsoleTextAttribute(ServiceVariables::hOutputBuffer, Normal);
+}
+
+void Label::Fill()
 {
 	for (int i = 0, j = 0; i < maxLength; i++)
 	{
@@ -50,26 +70,4 @@ void Label::InitializeLine()
 	}
 	line += indicator;
 }
-
-
-void Label::Draw(const COORD origin, string textSection)
-{
-	SetConsoleCursorPosition(ServiceVariables::hOutputBuffer, { origin.X, origin.Y });
-	if (textSection == text)
-	{
-		SetConsoleTextAttribute(ServiceVariables::hOutputBuffer, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		cout << line;
-	}
-	else
-	{
-		SetConsoleTextAttribute(ServiceVariables::hOutputBuffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		cout << line;
-	}
-	SetConsoleTextAttribute(ServiceVariables::hOutputBuffer, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-}
-
-inline void Label::Draw(const COORD& origin, COORD offset, string textSection)
-{
-}
-
 

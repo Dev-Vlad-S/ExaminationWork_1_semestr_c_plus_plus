@@ -8,6 +8,7 @@ private:
 	static void Clear();
 
 public:
+	static COORD getOrigin();
 	static void Draw(string text = "");
 
 private:
@@ -21,12 +22,12 @@ COORD StatusBar::origin = { 0,0 };
 string StatusBar::indicator = ": ";
 COORD StatusBar::cursorPosition = { short(size(indicator)), 0 };
 
+COORD StatusBar::getOrigin() { return origin; }
 
 void StatusBar::Draw(string text)
 {
 	GetConsoleScreenBufferInfo(ServiceVariables::hOutputBuffer, &ServiceVariables::cScrBufferInfo);
 	COORD currentCursorPosition = ServiceVariables::cScrBufferInfo.dwCursorPosition;
-
 
 	Clear();
 
