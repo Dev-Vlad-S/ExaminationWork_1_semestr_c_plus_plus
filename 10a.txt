@@ -1,8 +1,18 @@
 0;Sorokin;Vladislav;Dmitrievich;
 ;English language;5;5;2;3;4;
 ;Russian language;3;4;5;6;7;
+;Geography;
+;Mathematics;
+;Literature;
+;Geometry;
+;Informatics;
 -
 1;Ivanov;Ivan;Ivanovich;
 ;English language;2;2;2;3;4;
 ;Russian language;
+;Geography;
+;Mathematics;
+;Literature;
+;Geometry;
+;Informatics;
 -

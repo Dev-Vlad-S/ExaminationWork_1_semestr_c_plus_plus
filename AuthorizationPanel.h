@@ -45,7 +45,8 @@ AuthorizationPanel::AuthorizationPanel() : frame{}
 void AuthorizationPanel::SelectSection(KEY_EVENT_RECORD key, DataBaseClassRoomTeachers& dbClassRoomTeachers)
 {
 	int activeSection = section;
-	if (!key.bKeyDown)
+	
+	if (key.bKeyDown || key.wVirtualKeyCode == SHIFT_PRESSED)
 	{
 		switch (key.wVirtualKeyCode)
 		{

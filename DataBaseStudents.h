@@ -7,6 +7,7 @@ class DataBaseStudents
 {
 public:
 	bool ImportDataBaseStudents(string path);
+	bool ExportDataBaseStudents(string path);
     map<int, Student>& getStudents();
     DataBaseStudents();
 private:
@@ -39,14 +40,11 @@ bool DataBaseStudents::ImportDataBaseStudents(string path)
         if (line[0] != ';' && line[0] != '-')
         {
             student = Student(line);
-            student.id = students.size();
-            students.insert(pair<int, Student>(student.id, student));
         }
         if (line[0] == ';')
         {
             student.AddMarks(line);
-            student.id = students.size() - 1;
-            students[student.id] = student;
+            students[student.getId()] = student;
         }
         
     }
@@ -60,5 +58,41 @@ bool DataBaseStudents::ImportDataBaseStudents(string path)
         return false;
     }
 }
+
+bool DataBaseStudents::ExportDataBaseStudents(string path)
+{
+    ofstream file;
+    path = path + ".txt";
+    file.open(path, ios::trunc);
+    if (!file.is_open()) {
+        file.close();
+        return false;
+    }
+
+    for (auto& itemid : students)
+    {
+        string indicator = ";";
+        file << itemid.first << indicator;
+        file << itemid.second.getLastName() << indicator;
+        file << itemid.second.getFirstName() << indicator;
+        file << itemid.second.getMiddleName() << indicator;
+        file << endl;
+
+        for (auto& itemsubject : itemid.second.getSubjects())
+        {
+            file << indicator;
+            file << itemsubject << indicator;
+            for (auto& itemmark : itemid.second.getMarks()[itemsubject])
+            {
+                file << itemmark << indicator;
+            }
+            file << endl;
+        }
+        file << "-" << endl;
+    }
+   
+}
+
+
 
 DataBaseStudents::DataBaseStudents(){}

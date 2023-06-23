@@ -1,0 +1,6 @@
+read 10a print
+add student -l Ivanov -f Ivan -m Ivanych print
+rename student -id 2 -l Petrov print
+add marks -all 4 print
+add mark -id 2 -s 1 -m 3
+change mark -id 2 -s 1 -m 3 -n 4 print

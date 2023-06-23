@@ -15,12 +15,13 @@ public:
 	void setFirstName(string firstName);
 	vector<string>& getSubjects();
 	map<string, vector<string>>& getMarks();
-	~Student();
+	void setMarksEverySubject(string mark);
+	int getId();
+	void setId(int id);
 	Student(string line);
 	Student();
-public:
-	static int id;
 private:
+	int id;
 	string firstName;
 	string lastName;
 	string middleName;
@@ -28,7 +29,6 @@ private:
 	map<string, vector<string>> marks;
 };
 
-int Student::id = 0;
 
 void Student::setMiddleName(string middleName)
 {
@@ -58,19 +58,30 @@ map<string, vector<string>>& Student::getMarks()
 	return marks;
 }
 
-Student::~Student()
+void Student::setMarksEverySubject(string mark)
 {
-	--id;
+	for (auto& idSubject : marks)
+	{
+		idSubject.second.push_back(mark);
+	}
 }
+
 
 Student::Student()
 {
-	++id;
+	id = 0;
 	firstName = "";
 	lastName = " ";
 	middleName = " ";
-	subjects = { "English language", "Russian language" };
+	subjects = { "English language", "Russian language", "Geography", "Mathematics", "Literature", "Geometry", "Informatics" };
 	marks = {};
+}
+
+int Student::getId() {	return id; }
+
+void Student::setId(int id)
+{
+	this->id = id;
 }
 
 Student::Student(string line) : Student()

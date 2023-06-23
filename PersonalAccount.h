@@ -18,10 +18,17 @@ private:
 	void ClearInputedCommand();
 	void ImplementCommands(DataBaseStudents& dbStudents);
 	void UpdateHistoryPanel();
-	bool ReadFile(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool ReadFromFile(DataBaseStudents& dbStudents, vector<string>& commandLine);
 	void PrintStudents(DataBaseStudents& dbStudents, vector<string>& commandLine);
 	bool AddStudent(DataBaseStudents& dbStudents, vector<string>& commandLine);
 	bool DeleteByID(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool WriteToFile(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool ReNameLastName(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool ReNameFirstName(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool ReNameMiddleName(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool AddMarksEvery(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool AddMark(DataBaseStudents& dbStudents, vector<string>& commandLine);
+	bool UpdateMark(DataBaseStudents& dbStudents, vector<string>& commandLine);
 	bool CallHelp(vector<string>& commandLine);
 	void ListUpHistory();
 	void ListDownHistory();
@@ -63,7 +70,7 @@ void PersonalAccount::ListDownHistory()
 
 void PersonalAccount::InputCommands(KEY_EVENT_RECORD key, DataBaseStudents& dbStudents)
 {
-	if (!key.bKeyDown)
+	if (key.bKeyDown || key.wVirtualKeyCode == SHIFT_PRESSED)
 	{
 		switch (key.wVirtualKeyCode)
 		{
@@ -86,6 +93,7 @@ void PersonalAccount::InputCommands(KEY_EVENT_RECORD key, DataBaseStudents& dbSt
 	}
 }
 
+
 void PersonalAccount::ImplementCommands(DataBaseStudents& dbStudents)
 {
 	UpdateHistoryPanel();
@@ -95,23 +103,370 @@ void PersonalAccount::ImplementCommands(DataBaseStudents& dbStudents)
 		if (AddStudent(dbStudents, commandLine))
 		{
 			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success add student");
 		}
-		if (ReadFile(dbStudents, commandLine))
+		if (ReadFromFile(dbStudents, commandLine))
 		{
 			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success read from file");
 		}
 		if (DeleteByID(dbStudents, commandLine))
 		{
 			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success delete student");
 		}
 		if (CallHelp(commandLine))
 		{
-			
+			StatusBar::Draw("Success called help");
 		}
+		if (WriteToFile(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success write to file help");
+		}
+		if (ReNameLastName(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success rename");
+		}
+		if (ReNameFirstName(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success rename");
+		}
+		if (ReNameMiddleName(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success rename");
+		}
+		if (AddMarksEvery(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success add marks all");
+		}
+		if (AddMark(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success add mark");
+		}
+		if (UpdateMark(dbStudents, commandLine))
+		{
+			PrintStudents(dbStudents, commandLine);
+			StatusBar::Draw("Success update mark");
+		}
+
 	}
 	ClearInputedCommand();
 	commandPanel.getCommandsHistoryPanel().resetPosition();
 	Draw();
+}
+
+bool PersonalAccount::UpdateMark(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (commandLine[0] == "change")
+	{
+		if (commandLine.size() > 1)
+		{
+			if (commandLine[1] == "mark")
+			{
+				if (commandLine.size() > 2)
+				{
+					if (commandLine[2] == "-id")
+					{
+						if (commandLine.size() > 3)
+						{
+							if (dbStudents.getStudents().empty())
+							{
+								return isReady;
+							}
+							if (commandLine.size() > 4)
+							{
+								if (commandLine[4] == "-s")
+								{
+									if (commandLine.size() > 5)
+									{
+										string subject = dbStudents.getStudents().find(stoi(commandLine[3]))->second.getSubjects()[stoi(commandLine[5])];
+
+										if (commandLine.size() > 6)
+										{
+											if (commandLine[6] == "-m")
+											{
+												if (commandLine.size() > 7)
+												{
+													string mark = commandLine[7];
+													if (commandLine.size() > 8)
+													{
+														if (commandLine[8] == "-n")
+														{
+															if (commandLine.size() > 9)
+															{
+																for (auto& item : dbStudents.getStudents().find(stoi(commandLine[3]))->second.getMarks().find(subject)->second)
+																{
+																	if (item == mark)
+																	{
+																		item = commandLine[9];
+																		isReady = true;
+																		break;
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return isReady;
+}
+
+bool PersonalAccount::AddMark(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (commandLine[0] == "add")
+	{
+		if (commandLine.size() > 1)
+		{
+			if (commandLine[1] == "mark")
+			{
+				if (commandLine.size() > 2)
+				{
+					if (commandLine[2] == "-id")
+					{
+						if (commandLine.size() > 3)
+						{
+							if (dbStudents.getStudents().empty())
+							{
+								return isReady;
+							}
+							if (commandLine.size() > 4)
+							{
+								if (commandLine[4] == "-s")
+								{
+									if (commandLine.size() > 5)
+									{
+										string subject = dbStudents.getStudents().find(stoi(commandLine[3]))->second.getSubjects()[stoi(commandLine[5])];
+
+										if (commandLine.size() > 6)
+										{
+											if (commandLine[6] == "-m")
+											{
+												if (commandLine.size() > 7)
+												{
+													dbStudents.getStudents().find(stoi(commandLine[3]))->second.getMarks().find(subject)->second.push_back(commandLine[7]);
+													isReady = true;
+												}
+											}
+										}
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return isReady;
+}
+
+bool PersonalAccount::AddMarksEvery(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (commandLine[0] == "add")
+	{
+		if (commandLine.size() > 1)
+		{
+			if (commandLine[1] == "marks")
+			{
+				if (commandLine.size() > 2)
+				{
+					if (commandLine[2] == "-all")
+					{
+						if (commandLine.size() > 3)
+						{
+							if (!dbStudents.getStudents().empty())
+							{
+								for (auto& itemid : dbStudents.getStudents())
+								{
+									for (auto& itemsubject : itemid.second.getSubjects())
+									{
+										itemid.second.setMarksEverySubject(commandLine[3]);
+										break;
+									}
+								}
+								isReady = true;;
+							}
+							
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return isReady;
+}
+
+
+bool PersonalAccount::ReNameMiddleName(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (commandLine[0] == "rename")
+	{
+		if (commandLine.size() > 1)
+		{
+			if (commandLine[1] == "student")
+			{
+				if (commandLine.size() > 2)
+				{
+					if (commandLine[2] == "-id")
+					{
+						if (commandLine.size() > 3)
+						{
+							if (dbStudents.getStudents().empty())
+							{
+								return isReady;
+							}
+							if (commandLine.size() > 4)
+							{
+								if (commandLine[4] == "-m")
+								{
+									if (commandLine.size() > 5)
+									{
+										dbStudents.getStudents().find(stoi(commandLine[3]))->second.setMiddleName(commandLine[5]);
+										isReady = true;
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return isReady;
+}
+
+bool PersonalAccount::ReNameFirstName(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (commandLine[0] == "rename")
+	{
+		if (commandLine.size() > 1)
+		{
+			if (commandLine[1] == "student")
+			{
+				if (commandLine.size() > 2)
+				{
+					if (commandLine[2] == "-id")
+					{
+						if (commandLine.size() > 3)
+						{
+							if (dbStudents.getStudents().empty())
+							{
+								return isReady;
+							}
+							if (commandLine.size() > 4)
+							{
+								if (commandLine[4] == "-f")
+								{
+									if (commandLine.size() > 5)
+									{
+										dbStudents.getStudents().find(stoi(commandLine[3]))->second.setFirstName(commandLine[5]);
+										isReady = true;
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return isReady;
+}
+
+bool PersonalAccount::ReNameLastName(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (commandLine[0] == "rename")
+	{
+		if (commandLine.size() > 1)
+		{
+			if (commandLine[1] == "student")
+			{
+				if (commandLine.size() > 2)
+				{
+					if (commandLine[2] == "-id")
+					{
+						if (commandLine.size() > 3)
+						{
+							if (dbStudents.getStudents().empty())
+							{
+								return isReady;
+							}
+							if (commandLine.size() > 4)
+							{
+								if (commandLine[4] == "-l")
+								{
+									if (commandLine.size() > 5)
+									{
+										dbStudents.getStudents().find(stoi(commandLine[3]))->second.setLastName(commandLine[5]);
+										isReady = true;
+									}
+								}
+							}
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	return isReady;
+}
+
+bool PersonalAccount::WriteToFile(DataBaseStudents& dbStudents, vector<string>& commandLine)
+{
+	bool isReady = false;
+	if (!dbStudents.getStudents().empty())
+	{
+		if (commandLine[0] == "write")
+		{
+			if (commandLine.size() > 1)
+			{
+				if (dbStudents.ExportDataBaseStudents(commandLine[1]))
+				{
+
+					isReady = true;
+				}
+				else
+				{
+					isReady = false;
+				}
+			}
+		}
+	}
+	return isReady;
 }
 
 bool PersonalAccount::DeleteByID(DataBaseStudents& dbStudents, vector<string>& commandLine)
@@ -140,7 +495,6 @@ bool PersonalAccount::DeleteByID(DataBaseStudents& dbStudents, vector<string>& c
 		}
 
 	}
-
 	return isReady;
 }
 
@@ -158,12 +512,20 @@ bool PersonalAccount::AddStudent(DataBaseStudents& dbStudents, vector<string>& c
 			{
 				if (commandLine.size() > 2)
 				{
-					isReady = true;
-
 					if (commandLine[2] == "-l")
 					{
 						if (commandLine.size() > 3)
 						{
+							isReady = true;
+							if (!dbStudents.getStudents().empty())
+							{
+								int id = dbStudents.getStudents().rbegin()->second.getId();
+								student.setId(++id);
+							}
+							else
+							{
+								student.setId(0);
+							}
 							student.setLastName(commandLine[3]);
 							isReady = true;
 
@@ -194,17 +556,14 @@ bool PersonalAccount::AddStudent(DataBaseStudents& dbStudents, vector<string>& c
 			}
 		}
 	}
-
-
 	if (isReady)
 	{
-		student.id = dbStudents.getStudents().size();
-		dbStudents.getStudents()[student.id] = student;
+		dbStudents.getStudents()[student.getId()] = student;
 	}
 	return isReady;
 }
 
-bool PersonalAccount::ReadFile(DataBaseStudents& dbStudents, vector<string>& commandLine)
+bool PersonalAccount::ReadFromFile(DataBaseStudents& dbStudents, vector<string>& commandLine)
 {
 	if (dbStudents.getStudents().empty())
 	{
@@ -236,7 +595,7 @@ bool PersonalAccount::ReadFile(DataBaseStudents& dbStudents, vector<string>& com
 
 void PersonalAccount::PrintStudents(DataBaseStudents& dbStudents, vector<string>& commandLine)
 {
-	if (commandLine[commandLine.size()-1] == "print")
+	if (commandLine[commandLine.size() - 1] == "print")
 	{
 		outPutPanel.Display(dbStudents);
 	}

@@ -30,32 +30,53 @@ void OutPutPanel::DisplayHelp()
 	cout << "\t" << " * - " << "\"-m <middle name>\"" <<  " - " << "Add middle name" << endl;
 	cout << "4. " << "delete student" << " - " << "Delete student from data base of students" << endl;
 	cout << "\t" << " * - " << "\"-id <id>\"" << " - " << "Delete student from data base of students by ID" << endl;
+	cout << "5. " << "write <name>" << " - " << "Save data base of students" << endl;
+	cout << "6. " << "rename student" << "\"-id <id>\"" << " - " << "Rename Student" << endl;
+	cout << "\t" << " * - " << "\"-l <last name>\"" << " - " << "Rename last name" << endl;
+	cout << "\t" << " * - " << "\"-f <first name>\"" << " - " << "Rename first name" << endl;
+	cout << "\t" << " * - " << "\"-m <middle name>\"" << " - " << "Rename middle name" << endl;
+	cout << "7. " << "add marks " << "\"-all <mark>\"" << " - " << "Add marks every student" << endl;
+	cout << "8. " << "add mark " << "\"-id <id>\", " << "\"-s <subject id>\", " << "\"-m <mark>\"" " - " << "Add mark to student" << endl;
+	cout << "9. " << "change mark " << "\"-id <id>\", " << "\"-s <subject id>\", " << "\"-m <old mark>\", " << "\"-n <new mark>\"" << " - " << "Add mark to student" << endl;
+
 }
 
 void OutPutPanel::Display(DataBaseStudents& dbStudents)
 {
 	Clear();
 	SetConsoleCursorPosition(ServiceVariables::hOutputBuffer, origin);
-	for (auto& itemid : dbStudents.getStudents())
+	if (!dbStudents.getStudents().empty())
 	{
-		string indicator = ";";
-		cout << itemid.first << indicator;
-		cout << itemid.second.getLastName() << indicator;
-		cout << itemid.second.getFirstName() << indicator;
-		cout << itemid.second.getMiddleName() << indicator;
-		cout << endl;
-
-		for (auto& itemsubject : itemid.second.getSubjects())
+		for (auto& itemid : dbStudents.getStudents())
 		{
-			cout << indicator;
-			cout << itemsubject << indicator;
-			for (auto& itemmark : itemid.second.getMarks()[itemsubject])
-			{
-				cout << itemmark << indicator;
-			}
+			string indicator = ";";
+			cout << itemid.first << indicator;
+			cout << itemid.second.getLastName() << indicator;
+			cout << itemid.second.getFirstName() << indicator;
+			cout << itemid.second.getMiddleName() << indicator;
 			cout << endl;
+
+			int idSubj = 0;
+			for (auto& itemsubject : itemid.second.getSubjects())
+			{
+				cout << idSubj++;
+				cout << indicator;
+				cout << itemsubject << indicator;
+				for (auto& itemmark : itemid.second.getMarks()[itemsubject])
+				{
+					cout << itemmark << indicator;
+				}
+				cout << endl;
+			}
+
+			cout << "-" << endl;
 		}
 	}
+	else
+	{
+		cout << "You have not students.";
+	}
+	
 }
 
 OutPutPanel::OutPutPanel() {}

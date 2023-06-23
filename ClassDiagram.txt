@@ -119,6 +119,12 @@ class DataBase
 
 class PersonalAccount
 {
++ InputCommands(key : KEY_EVENT_RECORD, dbStudents : DataBaseStudents&) : void
++ Draw() : void
++ getDemonstration() : bool
++ setDemonstartion(isDemonstration : bool) : void
++ PersonalAccount()
+
 - ClearInputedSymbol() : void
 - ClearInputedCommand() : void
 - ImplementCommans(dbStudents : DataBaseStudents&) : void
@@ -127,6 +133,13 @@ class PersonalAccount
 - PrintStudents(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
 - AddStudent(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
 - DeleteByID(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- WriteToFile(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- RenameLastName(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- RenameFirstName(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- RenameMiddleName(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- AddMarksEvery(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- AddMark(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
+- UpdateMark(dbStudents : DataBaseStudents&, commandLine : vector<string>&) : bool
 - CallHelp(commandLine : vector<string>&) : bool
 - ListUpHistory() : void
 - ListDownHistory() : void
@@ -196,7 +209,7 @@ class OutPutPanel
 class AuthorizationPanel
 {
 + Draw() : void
-+ SelectSection(key : KEY_EVENT_RECORD) : void
++ SelectSection(key : KEY_EVENT_RECORD, dataBaseClassRoomTeachers : dataBaseClassRoomTeachers) : void
 + getStatusDemonstration() : bool
 + AuthorizationPanel()
 
